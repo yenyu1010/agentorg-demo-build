@@ -109,8 +109,8 @@ Worklogs land in `agents/{team}/{agent}/worklog/{timestamp}_{agent}.json`.
 
 In this demo there are **two** entry skills:
 
-- `/tuq-edu` — All edu / content / training material work
-- `/tuq-agent` — All agent system modification (create / edit / govern agents)
+- `/S33-edu` — All edu / content / training material work
+- `/S33-agent` — All agent system modification (create / edit / govern agents)
 
 Type any of these in Claude Code with cwd set to this folder.
 

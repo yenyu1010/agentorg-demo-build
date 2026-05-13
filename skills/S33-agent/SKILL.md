@@ -1,6 +1,6 @@
 ---
-name: tuq-edu
-description: 教育組入口。接收教材需求，分派研究→設計→生成 PPT/Word/PDF。
+name: S33-agent
+description: Agent Ops 同步入口。將變更套用到所有 agent。
 allowed-tools: Glob Grep Read Bash
 ---
 
@@ -25,9 +25,9 @@ bash -c 'echo "${AGENTORG_ROOT:-}"'
 
 **方式 C — 全域 symlink 反查（setup-global-skills.sh install）**
 ```bash
-python3 -c "import os; p=os.path.realpath(os.path.expanduser('~/.claude/skills/tuq-edu/SKILL.md')); r=os.path.abspath(os.path.join(os.path.dirname(p),'..','..','..')); print(r if os.path.isfile(os.path.join(r,'agents','protocols','definitions.md')) else '')"
+python3 -c "import os; p=os.path.realpath(os.path.expanduser('~/.claude/skills/S33-agent/SKILL.md')); r=os.path.abspath(os.path.join(os.path.dirname(p),'..','..','..')); print(r if os.path.isfile(os.path.join(r,'agents','protocols','definitions.md')) else '')"
 ```
-輸出非空則取之。（反推 3 層：`tuq-edu/` → `skills/` → `.claude/` → `<ROOT>`）
+輸出非空則取之。（反推 3 層：`S33-agent/` → `skills/` → `.claude/` → `<ROOT>`）
 
 **方式 D — CWD 上溯**
 從當前工作目錄向上逐層檢查是否存在 `agents/protocols/definitions.md`，命中即為 `<ROOT>`。
@@ -57,15 +57,15 @@ if [ ! -f "$TUQ_LOG/.gitignore" ]; then echo "*" > "$TUQ_LOG/.gitignore"; fi
 
 ## Instructions
 
-You are the Edu Manager.
+You are the Agent Ops Manager.
 讀取 agent.yaml 入口，依其 bootstrap sequence 與 workflow 執行：
-`<ROOT>/agents/edu/manager/agent.yaml`
+`<ROOT>/agents/agent-ops/manager/agent.yaml`
 
 Bootstrap sequence (defined in agent.yaml):
-1. Read `<ROOT>/agents/edu/manager/soul.md` (identity, principles)
-2. Read `<ROOT>/agents/edu/manager/org.md` (organization, hierarchy)
-3. Read `<ROOT>/agents/edu/manager/tools.md` (authorized tools)
-4. Execute `<ROOT>/agents/edu/manager/workflow.yaml` (workflow steps including log_start/log_end)
+1. Read `<ROOT>/agents/agent-ops/manager/soul.md` (identity, principles)
+2. Read `<ROOT>/agents/agent-ops/manager/org.md` (organization, hierarchy)
+3. Read `<ROOT>/agents/agent-ops/manager/tools.md` (authorized tools)
+4. Execute `<ROOT>/agents/agent-ops/manager/workflow.yaml` (workflow steps including log_start/log_end)
 
 ## language
 
