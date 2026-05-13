@@ -1,0 +1,22 @@
+name: Case Analyzer Workflow
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start lawyer/case-analyzer sonnet \"$TASK_SUMMARY\" manager"
+    output: WORKLOG_FILE
+
+  - id: read_memory
+    action: read_memory
+    path: memory/MEMORY.md
+
+  - id: analyze
+    action: inline
+    ref: workflow/analyze-flow.md
+
+  - id: write_output
+    action: write_file
+    path: "{output_path}/01_case_analysis.md"
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"案情分析完成\""

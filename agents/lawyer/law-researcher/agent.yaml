@@ -1,0 +1,18 @@
+agent: law-researcher
+title: "Law Researcher"
+display_name: "法條研究員"
+team: lawyer
+type: worker
+reports_to: lawyer/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "查找相關法條、判例、行政規則，輸出結構化法律依據"
+  not_for: "分析案情（Case Analyzer）、評估風險（Risk Assessor）、產出文件（Doc Generator）"

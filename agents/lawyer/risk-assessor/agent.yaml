@@ -1,0 +1,18 @@
+agent: risk-assessor
+title: "Risk Assessor"
+display_name: "法律風險評估師"
+team: lawyer
+type: worker
+reports_to: lawyer/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "根據案情和法條，評估法律風險、可能結果、建議行動方案"
+  not_for: "分析案情（Case Analyzer）、查找法條（Law Researcher）、產出文件（Doc Generator）"

@@ -1,0 +1,22 @@
+name: Risk Assessor Workflow
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start lawyer/risk-assessor sonnet \"$TASK_SUMMARY\" manager"
+    output: WORKLOG_FILE
+
+  - id: read_inputs
+    action: read_files
+    paths: ["{output_path}/01_case_analysis.md", "{output_path}/02_law_research.md"]
+
+  - id: assess
+    action: inline
+    ref: workflow/assess-flow.md
+
+  - id: write_output
+    action: write_file
+    path: "{output_path}/03_risk_assessment.md"
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"風險評估完成\""

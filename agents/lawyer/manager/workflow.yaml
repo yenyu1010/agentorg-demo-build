@@ -1,0 +1,96 @@
+name: Lawyer Manager Orchestration
+description: 法務分析流程，含兩個 HITL 確認關卡。Case Analysis → Law Research → Risk Assessment → Doc Generation。
+
+error_policy:
+  default: retry_once
+  max_retries: 1
+  on_max_retries: report_gap_to_user
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start lawyer/manager sonnet \"$TASK_SUMMARY\" user"
+    output: WORKLOG_FILE
+    on_error: continue
+
+  - id: check_memory
+    action: read_memory
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: parse_request
+    action: inline
+    ref: workflow/lawyer-flow.md#parse_request
+    on_error: report_and_stop
+
+  - id: session_init
+    action: manager_self
+    note: "建立 output_path 目錄，設定 task_id"
+    ref: workflow/lawyer-flow.md#session_init
+    on_error: continue
+
+  - id: analyze_case
+    action: dispatch_agent
+    agent: lawyer/case-analyzer
+    model: sonnet
+    ref: workflow/lawyer-flow.md#analyze_case
+    on_error: retry_once
+
+  - id: hitl_gate_1
+    action: hitl_pause
+    note: "向使用者呈現案情摘要，等待確認後再繼續"
+    ref: workflow/lawyer-flow.md#hitl_gate_1
+    on_error: report_and_stop
+
+  - id: research_law
+    action: dispatch_agents_parallel
+    agents: [lawyer/law-researcher, shared/researcher]
+    model: sonnet
+    ref: workflow/lawyer-flow.md#research_law
+    on_error: retry_once
+
+  - id: assess_risk
+    action: dispatch_agent
+    agent: lawyer/risk-assessor
+    model: sonnet
+    ref: workflow/lawyer-flow.md#assess_risk
+    on_error: retry_once
+
+  - id: hitl_gate_2
+    action: hitl_pause
+    note: "向使用者呈現風險評估結果，確認後才產出文件"
+    ref: workflow/lawyer-flow.md#hitl_gate_2
+    on_error: report_and_stop
+
+  - id: generate_docs
+    action: dispatch_agent
+    agent: lawyer/doc-generator
+    model: sonnet
+    ref: workflow/lawyer-flow.md#generate_docs
+    on_error: retry_once
+
+  - id: synthesize
+    action: merge_results
+    on_error: partial_report
+
+  - id: deliver
+    action: respond_to_user
+    ref: workflow/lawyer-flow.md#deliver
+    on_error: continue
+
+  - id: save_memory
+    action: write_memory
+    path: memory/
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: report_and_stop
+
+references:
+  - workflow/lawyer-flow.md
+  - workflow/dispatch-protocol.md
+  - agents/protocols/worklog-protocol.md
+  - agents/protocols/hitl-protocol.md
+  - agents/protocols/verification-protocol.md

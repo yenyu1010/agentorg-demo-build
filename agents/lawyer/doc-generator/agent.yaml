@@ -1,0 +1,18 @@
+agent: doc-generator
+title: "Legal Doc Generator"
+display_name: "法律文件產生器"
+team: lawyer
+type: worker
+reports_to: lawyer/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "根據分析結果產出法律意見書、合約審查報告、風險摘要等法律文件"
+  not_for: "分析案情（Case Analyzer）、查找法條（Law Researcher）、評估風險（Risk Assessor）"

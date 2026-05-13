@@ -1,0 +1,22 @@
+name: Law Researcher Workflow
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start lawyer/law-researcher sonnet \"$TASK_SUMMARY\" manager"
+    output: WORKLOG_FILE
+
+  - id: read_memory
+    action: read_memory
+    path: memory/MEMORY.md
+
+  - id: research
+    action: inline
+    ref: workflow/research-flow.md
+
+  - id: write_output
+    action: write_file
+    path: "{output_path}/02_law_research.md"
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"法條研究完成\""

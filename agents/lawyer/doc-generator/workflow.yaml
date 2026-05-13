@@ -1,0 +1,26 @@
+name: Legal Doc Generator Workflow
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start lawyer/doc-generator sonnet \"$TASK_SUMMARY\" manager"
+    output: WORKLOG_FILE
+
+  - id: read_inputs
+    action: read_files
+    paths:
+      - "{output_path}/01_case_analysis.md"
+      - "{output_path}/02_law_research.md"
+      - "{output_path}/03_risk_assessment.md"
+
+  - id: generate
+    action: inline
+    ref: workflow/generate-flow.md
+
+  - id: convert_docx
+    action: shell
+    command: "python3 scripts/convert_md_to_docx.py {output_path}/04_legal_document.md {output_path}/法律文件.docx"
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"法律文件產出完成\""

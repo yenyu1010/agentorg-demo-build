@@ -1,0 +1,18 @@
+agent: case-analyzer
+title: "Case Analyzer"
+display_name: "案件分析師"
+team: lawyer
+type: worker
+reports_to: lawyer/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "釐清法律問題、提取關鍵事實、識別法律爭點"
+  not_for: "查找法條（Law Researcher）、評估風險（Risk Assessor）、產出文件（Doc Generator）"
