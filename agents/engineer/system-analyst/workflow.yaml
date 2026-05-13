@@ -1,0 +1,64 @@
+name: System Analyst Workflow
+description: 分析需求、設計系統架構並產出設計文件
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start engineer/system-analyst sonnet \"$TASK_SUMMARY\" engineer/manager"
+    output: WORKLOG_FILE
+    on_error: continue
+
+  - id: analyze_requirements
+    action: inline
+    description: |
+      拆解使用者需求為：
+      1. 功能需求列表（Functional Requirements）
+      2. 非功能需求（效能、安全、可維護性等）
+      3. 使用案例與邊界條件
+    on_error: report_and_stop
+
+  - id: design_architecture
+    action: inline
+    description: |
+      設計系統架構：
+      1. 系統架構圖（文字描述）
+      2. 模組劃分與職責
+      3. 資料流設計
+      4. API 介面定義（若需要）
+    on_error: report_and_stop
+
+  - id: select_tech_stack
+    action: inline
+    description: |
+      技術選型：
+      1. 建議語言/框架（含理由）
+      2. 依賴套件/服務
+      3. 開發環境需求
+    on_error: continue
+
+  - id: assess_risks
+    action: inline
+    description: |
+      風險評估：
+      1. 技術風險
+      2. 依賴風險
+      3. 時程風險
+      4. 應對策略
+    on_error: continue
+
+  - id: plan_steps
+    action: inline
+    description: |
+      規劃實作步驟（有順序的工作清單），讓 developer 知道從哪裡開始
+    on_error: continue
+
+  - id: write_design_doc
+    action: write_file
+    path: "01_design.md"
+    description: 將上述所有分析整合為完整設計文件
+    on_error: report_and_stop
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: continue

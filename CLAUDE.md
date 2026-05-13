@@ -107,10 +107,12 @@ Worklogs land in `agents/{team}/{agent}/worklog/{timestamp}_{agent}.json`.
 
 ## Dispatch Entry Points
 
-In this demo there are **two** entry skills:
+In this demo there are **four** entry skills:
 
 - `/S33-edu` — All edu / content / training material work
 - `/S33-agent` — All agent system modification (create / edit / govern agents)
+- `/S33-lawyer` — All legal, contract, compliance and risk analysis work
+- `/S33-engineer` — All software development, bug fix, refactoring and IT technical questions
 
 Type any of these in Claude Code with cwd set to this folder.
 

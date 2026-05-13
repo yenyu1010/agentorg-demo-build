@@ -1,0 +1,61 @@
+name: Tester Workflow
+description: 設計並執行測試案例，輸出 PASS 或 FAIL 裁決與測試報告
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start engineer/tester sonnet \"$TASK_SUMMARY\" engineer/manager"
+    output: WORKLOG_FILE
+    on_error: continue
+
+  - id: read_context
+    action: inline
+    description: |
+      讀取：
+      1. 原始需求（00_context.md）
+      2. 設計文件（01_design.md）
+      3. 所有程式碼檔案
+      4. 審查報告（03_review.md，若存在）
+    on_error: report_and_stop
+
+  - id: design_test_cases
+    action: inline
+    description: |
+      根據需求設計測試案例：
+      1. Happy Path（正常使用流程）
+      2. Edge Cases（邊界條件）
+      3. Error Cases（錯誤輸入）
+      4. Integration（模組間互動）
+    on_error: report_and_stop
+
+  - id: execute_tests
+    action: inline
+    description: |
+      執行測試（靜態邏輯分析 + 若環境允許則實際執行）：
+      - 記錄每個測試案例的輸入、預期輸出、實際結果
+      - 失敗的測試要記錄重現步驟
+    on_error: continue
+
+  - id: verdict
+    action: inline
+    description: |
+      決定裁決：
+      - 核心功能全數通過 → PASS
+      - 任何核心功能失敗 → FAIL（附 Bug Report）
+    on_error: report_and_stop
+
+  - id: write_test_report
+    action: write_file
+    path: "04_test_report.md"
+    description: |
+      產出測試報告，包含：
+      - verdict: PASS / FAIL
+      - 測試案例清單（含結果）
+      - 失敗的測試：重現步驟 + Bug Report
+      - 測試覆蓋率摘要
+    on_error: report_and_stop
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: continue

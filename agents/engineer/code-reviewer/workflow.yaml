@@ -1,0 +1,56 @@
+name: Code Reviewer Workflow
+description: 審查程式碼品質，輸出 PASS 或 REVISE 裁決
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start engineer/code-reviewer sonnet \"$TASK_SUMMARY\" engineer/manager"
+    output: WORKLOG_FILE
+    on_error: continue
+
+  - id: read_context
+    action: inline
+    description: |
+      讀取：
+      1. 原始需求（00_context.md）
+      2. 設計文件（01_design.md）
+      3. 所有程式碼檔案
+    on_error: report_and_stop
+
+  - id: review_correctness
+    action: inline
+    description: 逐一比對需求與程式碼，確認功能符合性
+    on_error: continue
+
+  - id: review_security
+    action: inline
+    description: 掃描安全漏洞（injection、hardcoded secrets、不安全輸入）
+    on_error: continue
+
+  - id: review_quality
+    action: inline
+    description: 評估程式碼品質（命名、可讀性、DRY、錯誤處理）
+    on_error: continue
+
+  - id: verdict
+    action: inline
+    description: |
+      決定裁決：
+      - 有嚴重問題 → REVISE（列出必須修復的項目）
+      - 無嚴重問題 → PASS（可列出選擇性建議）
+    on_error: report_and_stop
+
+  - id: write_review_report
+    action: write_file
+    path: "03_review.md"
+    description: |
+      產出審查報告，包含：
+      - verdict: PASS / REVISE
+      - 問題清單（嚴重度：CRITICAL / WARNING / INFO）
+      - 每個問題的修復建議
+    on_error: report_and_stop
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: continue

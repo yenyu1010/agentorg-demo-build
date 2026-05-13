@@ -1,0 +1,30 @@
+name: engineer/developer
+version: "1.0"
+role: worker
+team: engineer
+reports_to: engineer/manager
+
+description: |
+  全端程式開發專家。根據系統設計文件產出完整、可執行的程式碼，
+  附上實作說明與使用方式。
+
+model: sonnet
+
+bootstrap:
+  - soul.md
+  - tools.md
+  - skills.md
+  - org.md
+
+dispatch:
+  accepts_from:
+    - engineer/manager
+  trigger_keywords:
+    - 開發
+    - 實作
+    - 撰寫程式碼
+    - coding
+
+output:
+  format: code + markdown
+  primary_file: 02_implementation.md

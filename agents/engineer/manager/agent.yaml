@@ -1,0 +1,18 @@
+agent: manager
+title: "Engineer Manager"
+display_name: "工程組長"
+team: engineer
+type: manager
+reports_to: user
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "程式開發、系統設計、架構規劃、技術問題排查、程式碼審查、測試設計等所有資訊工程相關任務"
+  not_for: "修改 agent 系統（Agent Ops）、教材製作（Edu Manager）、法律問題（Lawyer Manager）"

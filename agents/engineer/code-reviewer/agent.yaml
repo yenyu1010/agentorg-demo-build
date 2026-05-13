@@ -1,0 +1,32 @@
+name: engineer/code-reviewer
+version: "1.0"
+role: worker
+team: engineer
+reports_to: engineer/manager
+
+description: |
+  程式碼審查專家。針對 developer 產出的程式碼進行品質審查，
+  輸出 PASS 或 REVISE 裁決，附上具體問題與改善建議。
+
+model: sonnet
+
+bootstrap:
+  - soul.md
+  - tools.md
+  - skills.md
+  - org.md
+
+dispatch:
+  accepts_from:
+    - engineer/manager
+  trigger_keywords:
+    - code review
+    - 程式碼審查
+    - 審查程式
+
+output:
+  format: markdown
+  primary_file: 03_review.md
+  verdict_values:
+    - PASS
+    - REVISE

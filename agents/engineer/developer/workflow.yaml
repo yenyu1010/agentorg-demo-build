@@ -1,0 +1,47 @@
+name: Developer Workflow
+description: 根據設計文件實作程式碼，產出可執行的完整實作
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start engineer/developer sonnet \"$TASK_SUMMARY\" engineer/manager"
+    output: WORKLOG_FILE
+    on_error: continue
+
+  - id: read_design
+    action: inline
+    description: 完整讀取 01_design.md，確認理解所有模組與技術要求
+    on_error: report_and_stop
+
+  - id: setup_structure
+    action: inline
+    description: |
+      建立程式碼目錄結構（依設計文件），
+      在 output_path 下建立所有需要的子目錄
+    on_error: report_and_stop
+
+  - id: implement_core
+    action: inline
+    description: |
+      實作核心功能模組：
+      1. 依設計文件的模組順序逐一實作
+      2. 每個檔案頂端加上用途說明註解
+      3. 複雜邏輯加行內註解
+    on_error: retry_once
+
+  - id: write_implementation_doc
+    action: write_file
+    path: "02_implementation.md"
+    description: |
+      產出實作說明文件，包含：
+      - 產出的程式碼檔案清單（路徑）
+      - 如何安裝依賴
+      - 如何執行
+      - 主要模組說明
+      - 已知限制
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: continue

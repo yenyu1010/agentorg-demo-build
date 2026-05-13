@@ -1,0 +1,87 @@
+name: Engineer Manager Orchestration
+description: 工程開發流程，含 HITL 設計確認關卡。Requirement → Design → Dev → Review → Test → Deliver。
+
+error_policy:
+  default: retry_once
+  max_retries: 1
+  on_max_retries: report_gap_to_user
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start engineer/manager sonnet \"$TASK_SUMMARY\" user"
+    output: WORKLOG_FILE
+    on_error: continue
+
+  - id: check_memory
+    action: read_memory
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: parse_request
+    action: inline
+    ref: workflow/engineer-flow.md#parse_request
+    on_error: report_and_stop
+
+  - id: session_init
+    action: manager_self
+    ref: workflow/engineer-flow.md#session_init
+    on_error: continue
+
+  - id: analyze_requirements
+    action: dispatch_agent
+    agent: engineer/system-analyst
+    model: sonnet
+    ref: workflow/engineer-flow.md#analyze_requirements
+    on_error: retry_once
+
+  - id: hitl_gate
+    action: hitl_pause
+    note: "向使用者呈現系統設計方案，確認後才開始開發"
+    ref: workflow/engineer-flow.md#hitl_gate
+    on_error: report_and_stop
+
+  - id: develop
+    action: dispatch_agent
+    agent: engineer/developer
+    model: sonnet
+    ref: workflow/engineer-flow.md#develop
+    on_error: retry_once
+
+  - id: review_code
+    action: dispatch_agent
+    agent: engineer/code-reviewer
+    model: sonnet
+    ref: workflow/engineer-flow.md#review_code
+    on_error: retry_once
+
+  - id: test
+    action: dispatch_agent
+    agent: engineer/tester
+    model: sonnet
+    ref: workflow/engineer-flow.md#test
+    on_error: retry_once
+
+  - id: synthesize
+    action: merge_results
+    on_error: partial_report
+
+  - id: deliver
+    action: respond_to_user
+    ref: workflow/engineer-flow.md#deliver
+    on_error: continue
+
+  - id: save_memory
+    action: write_memory
+    path: memory/
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: report_and_stop
+
+references:
+  - workflow/engineer-flow.md
+  - agents/protocols/worklog-protocol.md
+  - agents/protocols/hitl-protocol.md

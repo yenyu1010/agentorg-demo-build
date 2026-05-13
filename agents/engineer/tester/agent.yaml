@@ -1,0 +1,33 @@
+name: engineer/tester
+version: "1.0"
+role: worker
+team: engineer
+reports_to: engineer/manager
+
+description: |
+  軟體測試專家。設計並執行測試案例，驗證程式碼符合需求，
+  輸出 PASS 或 FAIL 裁決與完整測試報告。
+
+model: sonnet
+
+bootstrap:
+  - soul.md
+  - tools.md
+  - skills.md
+  - org.md
+
+dispatch:
+  accepts_from:
+    - engineer/manager
+  trigger_keywords:
+    - 測試
+    - test
+    - QA
+    - 驗證
+
+output:
+  format: markdown
+  primary_file: 04_test_report.md
+  verdict_values:
+    - PASS
+    - FAIL

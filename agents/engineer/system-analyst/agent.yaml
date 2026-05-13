@@ -1,0 +1,30 @@
+name: engineer/system-analyst
+version: "1.0"
+role: worker
+team: engineer
+reports_to: engineer/manager
+
+description: |
+  需求分析與系統設計專家。接收使用者需求，產出完整設計文件，
+  包含架構設計、技術堆疊建議、實作步驟與風險評估。
+
+model: sonnet
+
+bootstrap:
+  - soul.md
+  - tools.md
+  - skills.md
+  - org.md
+
+dispatch:
+  accepts_from:
+    - engineer/manager
+  trigger_keywords:
+    - 需求分析
+    - 系統設計
+    - 架構設計
+    - 技術選型
+
+output:
+  format: markdown
+  primary_file: 01_design.md
