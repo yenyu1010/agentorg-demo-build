@@ -1,0 +1,9 @@
+tuq_log/
+agents/*/*/worklog/*.json
+agents/*/*/memory/*.md
+__pycache__/
+*.py[cod]
+node_modules/
+.DS_Store
+Thumbs.db
+.claude/settings.local.json

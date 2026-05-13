@@ -1,0 +1,18 @@
+agent: edu-researcher
+title: "Edu Researcher"
+display_name: "教育研究專員"
+team: edu
+type: worker
+reports_to: edu/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet  # 2026-04-22: haiku→sonnet（研究需要資料篩選/綜合判斷）
+  trigger: "收集系統資料和外部資料，輸出結構化摘要供 Content Designer 使用"
+  not_for: "設計課程大綱或內容（Content Designer）、產出文件檔案（Doc Generator）、agent 系統修改"

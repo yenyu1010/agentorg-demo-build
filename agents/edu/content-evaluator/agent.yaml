@@ -1,0 +1,18 @@
+agent: content-evaluator
+title: "Content Evaluator"
+display_name: "教材審查專員"
+team: edu
+type: worker
+reports_to: edu/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "Content Designer 完成草稿後的品質審核、確認學習目標符合 Bloom's Taxonomy、設計評量題目"
+  not_for: "撰寫或修改教材內容（Content Designer）、轉換文件格式（Doc Generator）、搜尋資料"

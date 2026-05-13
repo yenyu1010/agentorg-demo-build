@@ -1,0 +1,42 @@
+name: Content Evaluator Workflow
+description: Router — 步驟跳轉與條件路由。完整流程邏輯在 workflow/evaluate-flow.md。
+
+error_policy:
+  default: retry_once
+  max_retries: 1
+  on_max_retries: report_what_was_done_and_what_failed
+
+steps:
+  - id: log_start
+    action: shell
+    command: scripts/worklog.sh start edu/content-evaluator
+    on_error: continue
+
+  - id: check_memory
+    action: read_file
+    path: agents/edu/content-evaluator/memory/MEMORY.md
+    description: 讀取過去評估經驗，了解常見評分標準與已知問題模式
+    on_error: continue
+
+  - id: run_evaluate_flow
+    action: follow
+    ref: agents/edu/content-evaluator/workflow/evaluate-flow.md
+    on_error:
+      action: stop_and_report
+      reason: evaluate flow 失敗，不得宣告評估通過，回報已完成與失敗的步驟
+
+  - id: save_memory
+    action: write_memory
+    description: 將本次評估的新發現寫入 memory（評分模式、常見缺陷、改進建議）
+    path: agents/edu/content-evaluator/memory/MEMORY.md
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: scripts/worklog.sh end edu/content-evaluator
+    on_error: continue
+
+references:
+  - agents/edu/content-evaluator/soul.md
+  - agents/edu/content-evaluator/tools.md
+  - agents/edu/content-evaluator/workflow/evaluate-flow.md

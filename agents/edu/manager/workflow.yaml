@@ -1,0 +1,166 @@
+name: Edu Manager Orchestration
+description: Manager-as-Coordinator — Manager 在每個 handoff 主動決策。細節邏輯在 workflow/edu-flow.md。
+
+error_policy:
+  default: retry_once
+  max_retries: 1
+  on_max_retries: report_gap_to_user
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start edu/manager sonnet \"$TASK_SUMMARY\" user"
+    output: WORKLOG_FILE
+    on_error: continue
+
+  - id: feedback_detect
+    action: manager_self
+    ref: agents/protocols/workflows/feedback-detect-flow.md
+    note: "偵測用戶回饋語意，觸發 memory 保存（標準化流程）"
+    on_error: continue
+
+  - id: check_memory
+    action: read_memory
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: parse_request
+    action: inline
+    ref: workflow/edu-flow.md#parse_request
+    on_error: report_and_stop
+
+  - id: scope_confirm # self-added 2026-04-25
+    action: manager_self
+    note: "列出研究/設計範圍清單（team 數 / 估計檔案數 / 估計 batch 數）。若涉及 > 10 個跨 team 檔案，在 dispatch brief 中明確標注 Context-Scoped File Batching 策略，避免 edu-researcher 上下文溢出或任務截斷。"
+    on_error: continue
+
+  - id: research
+    action: dispatch_agents_parallel
+    agents: [edu/edu-researcher, shared/researcher]
+    model: sonnet  # 2026-04-22: haiku→sonnet（研究需要資料篩選/綜合判斷）
+    ref: workflow/edu-flow.md#research
+    on_error: retry_once
+
+  - id: design_content
+    action: dispatch_agent
+    agent: edu/content-designer
+    model: sonnet
+    ref: workflow/edu-flow.md#design_content
+    on_error: retry_once
+
+  - id: evaluate_content
+    action: dispatch_agent
+    agent: edu/content-evaluator
+    model: sonnet
+    ref: workflow/edu-flow.md#evaluate_content
+    on_error: retry_once
+
+  - id: brand_asset_confirm
+    action: manager_self
+    note: "確認品牌色彩/字型/Logo 參考資料齊全。缺失任何品牌資產時暫停，請求用戶提供範本再繼續。parse_request 輸出需包含 brand_assets 欄位。"
+    on_error: report_and_stop
+
+  - id: visual_styling
+    action: dispatch_agent
+    agent: edu/visual-stylist
+    model: sonnet
+    ref: workflow/edu-flow.md#visual_styling
+    on_error: retry_once
+
+  - id: pre_generate_routing  # self-added 2026-04-15, updated 2026-04-15
+    action: inline
+    note: "讀取 design_draft，拆分章節清單（封面+Part1、Part2…Part6+結語），產出 chapter_dispatch_list 供並行派遣使用。這是固定步驟，不論投影片數量。"
+    ref: workflow/edu-flow.md#parallel-chapter-mode
+    on_error: continue
+
+  - id: generate_docs_parallel  # self-added 2026-04-15
+    action: dispatch_agents_parallel
+    agents: [edu/doc-generator]
+    model: sonnet
+    ref: workflow/edu-flow.md#parallel-chapter-mode
+    inline_verify: agents/protocols/workflows/inline-verify-flow.md
+    verify_note: "每次 agent 返回後立即驗證聲稱，通過才派下一個"
+    note: "每章一個 doc-generator instance，各自生成章節 PPTX 至 tmp/"
+    on_error: retry_once
+
+  - id: merge_docs  # self-added 2026-04-15
+    action: dispatch_agent
+    agent: edu/doc-generator
+    model: sonnet  # 2026-04-27: haiku→sonnet（user policy: ban haiku）
+    ref: workflow/edu-flow.md#merge-chapters
+    note: "收集 tmp/ 下所有章節 PPTX，合併為最終檔案，清理暫存"
+    on_error: retry_once
+
+  - id: consistency_check
+    action: dispatch_agent
+    agent: edu/qa-reviewer
+    model: sonnet  # 2026-04-22: haiku→sonnet（一致性判斷需要語義理解，非機械比對）
+    trigger: "新增/刪除/重排章節時，或主檔結構有任何變更時"
+    note: "全局一致性掃描：章節重疊檢查、頁碼連續性、目錄一致、投影片編號正確。增量修改必經此步。"
+    on_error: report_and_stop
+
+  - id: cross_deliverable_sync
+    action: dispatch_agent
+    agent: edu/doc-generator
+    model: sonnet  # 2026-04-27: haiku→sonnet（user policy: ban haiku）
+    trigger: "主檔結構變更後（新增/刪除章節、頁碼重編）"
+    note: "同步更新所有衍生交付檔：XLSX Timing Control 加入新章節時段、Instructor Guide 補寫新章節腳本、Workbook 補寫新章節工作紙。"
+    on_error: retry_once
+
+  - id: qa_review
+    action: dispatch_agent
+    agent: edu/qa-reviewer
+    model: sonnet  # 2026-04-22: haiku→sonnet（品質審查是判斷題，非機械檢查）
+    ref: workflow/edu-flow.md#qa_review
+    on_error: retry_once
+
+  - id: governance
+    skip_if: no_agent_system_files_modified
+    action: dispatch_agent
+    agent: agent-ops/governance
+    model: opus
+    on_error: report_and_continue
+    note: "Agent 系統檔案被修改時觸發 Governance 審查"
+
+  - id: verify
+    action: verify_agent_work
+    on_error: continue
+    note: "驗證 worker 產出的完整性和品質"
+
+  - id: synthesize
+    action: merge_results
+    on_error: partial_report
+    note: "整合多 worker 結果，從 deliver 獨立出來"
+
+  # self-added 2026-04-22
+  - id: memory_hygiene_check
+    action: manager_self
+    note: "掃視本次 dispatch 過的每個 worker 的 MEMORY.md 是否在 started_at 後有更新；未更新者在最終報告附提醒（不強制派工），連結到 memory-hygiene.md"
+    on_error: continue
+
+  - id: deliver
+    action: respond_to_user
+    ref: workflow/edu-flow.md#deliver
+    on_error: continue
+
+  - id: save_memory
+    action: write_memory
+    path: memory/
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: report_and_stop
+
+  - id: memory_check
+    action: manager_self
+    note: "回顧本輪：是否有用戶糾正/審查結果/新 lesson 需存 memory？有則寫入 memory/ + 更新 MEMORY.md；無則跳過。"
+    on_error: continue
+
+references:
+  - workflow/edu-flow.md
+  - workflow/dispatch-protocol.md
+  - workflow/synthesis-rules.md
+  - agents/protocols/worklog-protocol.md
+  - agents/protocols/verification-protocol.md

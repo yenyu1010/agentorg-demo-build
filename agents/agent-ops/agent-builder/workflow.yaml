@@ -1,0 +1,46 @@
+name: Agent Builder
+error_policy:
+  default: abort
+  on_partial_create: cleanup_and_abort
+  on_enhance_fail: revert
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start agent-ops/agent-builder sonnet \"$TASK_SUMMARY\""
+    on_error: continue
+
+  - id: check_memory
+    action: read_memory
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: detect_mode
+    action: classify
+    output: mode  # create | enhance | audit | create_skill | delete | bulk_update
+    on_error: abort
+
+  - id: route
+    action: route
+    on create: { ref: workflow/create.md }
+    on enhance: { ref: workflow/enhance.md }
+    on audit:        { ref: workflow/checklist.md }
+    on create_skill: { ref: workflow/create-skill.md }
+    on delete:       { ref: workflow/delete.md }
+    on bulk_update:  { ref: workflow/bulk-update.md }
+    on_error: abort
+
+  - id: save_memory
+    action: write_memory
+    path: memory/
+    on_error: continue
+
+  - id: memory_hygiene_check # self-added 2026-04-26
+    action: manager_self
+    note: "回顧本輪 memory/：有無超過 90 天未 touch 的 Learnings 可歸檔？MEMORY.md 索引是否一致？memory/ 超 20 個檔案時觸發週期性清理。"
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: continue

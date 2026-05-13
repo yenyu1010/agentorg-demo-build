@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "_comment": "2026-04-27 PS narrow patterns — workaround for v2.1.119 PowerShell(*) subexpression carve-out, see GH#52926",
+    "allow": [
+      "Bash(*)",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Agent",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "Skill(*)",
+      "PowerShell(Get-Process*)",
+      "PowerShell(Get-ChildItem*)",
+      "PowerShell(Get-Content*)",
+      "PowerShell(Get-Item*)",
+      "PowerShell(Get-Location*)",
+      "PowerShell(Get-Date*)",
+      "PowerShell(Get-Command*)",
+      "PowerShell(Get-Help*)",
+      "PowerShell(Test-Path*)",
+      "PowerShell(Select-String*)",
+      "PowerShell(Measure-Object*)"
+    ]
+  }
+}

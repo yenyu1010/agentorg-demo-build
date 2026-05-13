@@ -1,0 +1,42 @@
+name: Doc Generator Workflow
+description: Router — 步驟跳轉與條件路由。完整流程邏輯在 workflow/generate-flow.md。
+
+error_policy:
+  default: diagnose_and_retry
+  max_retries: 2
+  on_max_retries: report_what_was_done_and_what_failed
+
+steps:
+  - id: log_start
+    action: shell
+    command: scripts/worklog.sh start edu/doc-generator
+    on_error: continue
+
+  - id: check_memory
+    action: read_memory
+    description: 讀取相關記憶（工具路徑、上次格式偏好、已知問題）
+    on_error: continue
+
+  - id: run_generate_flow
+    action: follow
+    ref: agents/edu/doc-generator/workflow/generate-flow.md
+    on_error:
+      action: diagnose_and_retry
+      max_attempts: 2
+      on_max: report_what_was_done_and_what_failed
+
+  - id: save_memory
+    action: write_memory
+    description: 儲存本次執行經驗（成功格式、腳本路徑、錯誤訊息）
+    path: agents/edu/doc-generator/memory/MEMORY.md
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: scripts/worklog.sh end edu/doc-generator
+    on_error: continue
+
+references:
+  - agents/edu/doc-generator/soul.md
+  - agents/edu/doc-generator/tools.md
+  - agents/edu/doc-generator/workflow/generate-flow.md

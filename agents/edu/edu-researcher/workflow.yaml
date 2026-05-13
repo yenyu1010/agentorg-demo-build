@@ -1,0 +1,43 @@
+name: Edu Researcher Workflow
+description: Router — 步驟跳轉與條件路由。完整流程邏輯在 workflow/research-flow.md。
+
+error_policy:
+  default: diagnose_and_retry
+  max_retries: 2
+  on_max_retries: report_what_was_done_and_what_failed
+
+steps:
+  - id: log_start
+    action: shell
+    command: scripts/worklog.sh start edu/edu-researcher
+    on_error: continue
+
+  - id: check_memory
+    action: read_file
+    path: agents/edu/edu-researcher/memory/MEMORY.md
+    description: 讀取過去研究經驗，了解已探索主題與有效的資料來源
+    on_error: continue
+
+  - id: run_research_flow
+    action: follow
+    ref: agents/edu/edu-researcher/workflow/research-flow.md
+    on_error:
+      action: diagnose_and_retry
+      max_attempts: 2
+      on_max: report_what_was_done_and_what_failed
+
+  - id: save_memory
+    action: write_memory
+    description: 儲存本次研究的新發現（關鍵來源、研究方法、已知盲點）
+    path: agents/edu/edu-researcher/memory/MEMORY.md
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: scripts/worklog.sh end edu/edu-researcher
+    on_error: continue
+
+references:
+  - agents/edu/edu-researcher/soul.md
+  - agents/edu/edu-researcher/tools.md
+  - agents/edu/edu-researcher/workflow/research-flow.md

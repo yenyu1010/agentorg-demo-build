@@ -1,0 +1,42 @@
+name: QA Reviewer Workflow
+description: Router — 步驟跳轉與條件路由。完整流程邏輯在 workflow/qa-flow.md。
+
+error_policy:
+  default: retry_once
+  max_retries: 1
+  on_max_retries: report_what_was_done_and_what_failed
+
+steps:
+  - id: log_start
+    action: shell
+    command: scripts/worklog.sh start edu/qa-reviewer
+    on_error: continue
+
+  - id: check_memory
+    action: read_file
+    path: agents/edu/qa-reviewer/memory/MEMORY.md
+    description: 讀取過去審查經驗，了解常見問題模式
+    on_error: continue
+
+  - id: run_qa_flow
+    action: follow
+    ref: agents/edu/qa-reviewer/workflow/qa-flow.md
+    on_error:
+      action: stop_and_report
+      reason: qa flow 失敗，不得宣告 PASS，回報已完成與失敗的步驟
+
+  - id: save_memory
+    action: write_memory
+    description: 將本次審查的新發現寫入 memory（常見問題、驗證技巧）
+    path: agents/edu/qa-reviewer/memory/MEMORY.md
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: scripts/worklog.sh end edu/qa-reviewer
+    on_error: continue
+
+references:
+  - agents/edu/qa-reviewer/soul.md
+  - agents/edu/qa-reviewer/tools.md
+  - agents/edu/qa-reviewer/workflow/qa-flow.md

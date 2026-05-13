@@ -1,0 +1,18 @@
+agent: visual-stylist
+title: "Visual Stylist"
+display_name: "視覺設計師"
+team: edu
+type: worker
+reports_to: edu/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "視覺美化教材：配色方案、排版調整、PPT 樣式設計"
+  not_for: "設計教材內容（Content Designer）、轉換文件格式（Doc Generator）、搜尋外部設計資源"

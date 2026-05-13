@@ -1,0 +1,18 @@
+agent: qa-reviewer
+title: "QA Reviewer"
+display_name: "品質檢查專員"
+team: edu
+type: worker
+reports_to: edu/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "Doc Generator 產出 PPT/Word/PDF 後的技術品質審查（格式正確性、圖片完整性）"
+  not_for: "撰寫或修改教材內容（Content Designer）、轉換文件格式（Doc Generator）、內容品質評估（Content Evaluator）"

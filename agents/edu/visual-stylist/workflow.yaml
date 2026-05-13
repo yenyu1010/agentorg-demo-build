@@ -1,0 +1,41 @@
+name: Visual Stylist Workflow
+description: Router — 步驟跳轉與條件路由。完整流程邏輯在 workflow/styling-flow.md。
+
+error_policy:
+  default: retry_once
+  max_retries: 1
+  on_max_retries: report_what_was_done_and_what_failed
+
+steps:
+  - id: log_start
+    action: shell
+    command: scripts/worklog.sh start edu/visual-stylist
+    on_error: continue
+
+  - id: check_memory
+    action: read
+    path: agents/edu/visual-stylist/memory/MEMORY.md
+    on_error: continue
+
+  - id: run_styling_flow
+    action: follow
+    ref: agents/edu/visual-stylist/workflow/styling-flow.md
+    on_error:
+      action: stop_and_report
+      reason: styling flow 失敗，回報已完成與失敗的步驟
+
+  - id: save_memory
+    condition: learned something about audience visual preferences or brand constraints worth retaining
+    action: write_memory
+    path: agents/edu/visual-stylist/memory/
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: scripts/worklog.sh end edu/visual-stylist
+    on_error: continue
+
+references:
+  - agents/edu/visual-stylist/soul.md
+  - agents/edu/visual-stylist/tools.md
+  - agents/edu/visual-stylist/workflow/styling-flow.md

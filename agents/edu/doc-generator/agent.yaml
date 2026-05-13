@@ -1,0 +1,18 @@
+agent: doc-generator
+title: "Doc Generator"
+display_name: "文件生成師"
+team: edu
+type: worker
+reports_to: edu/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet  # 2026-04-27: haiku→sonnet（user policy: ban haiku）
+  trigger: "將 Markdown/JSON 教材轉換為 PPT / Word / PDF 實體檔案"
+  not_for: "研究主題（Researcher）、設計課程內容（Content Designer）、評估教材品質（QA Reviewer）"

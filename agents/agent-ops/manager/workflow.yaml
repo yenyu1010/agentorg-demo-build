@@ -1,0 +1,134 @@
+name: Agent Ops Manager Orchestration (Gold Standard)
+description: 骨幹流程 — 各步驟細節見 workflow/XXX-flow.md。此為金標準範本，所有 Manager 以此為參照。
+
+error_policy:
+  default: retry_once
+  max_retries: 1
+  on_max_retries: report_gap_to_user
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start agent-ops/manager opus \"$TASK_SUMMARY\" user"
+    note: "trace_id auto-generated for top-level Manager"
+    on_error: continue
+
+  - id: feedback_detect
+    action: manager_self
+    ref: agents/protocols/workflows/feedback-detect-flow.md
+    note: "偵測用戶回饋語意，觸發 memory 保存（標準化流程）"
+    on_error: continue
+
+  - id: check_memory
+    action: read_memory
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: classify
+    action: dispatch_agent
+    agent: shared/intent
+    model: sonnet  # 2026-04-27: haiku→sonnet（user policy: ban haiku）
+    ref: workflow/classify-flow.md
+    output: intent_result
+    on_error: manager_classifies_inline
+    note: "新增：委派 shared/intent 進行任務分類，不自己做"
+
+  - id: fast_path_check
+    action: manager_self
+    condition: |
+      intent_result.task_type == "query"
+      AND intent_result.risk_level == "none"
+    then: goto deliver
+    else: goto needs_insight
+    on_error: goto needs_insight
+    note: "新增：輕量查詢直接回答，跳過重量步驟"
+
+  - id: needs_insight
+    action: manager_self
+    ref: workflow/insight-flow.md
+    input: intent_result
+    output: insight_result
+    on_error: continue
+    note: "精簡：只做 context_load，需求分析已由 classify 完成"
+
+  - id: feasibility
+    action: manager_self
+    ref: workflow/feasibility-flow.md
+    input: [intent_result, insight_result]
+    output: feasibility_result
+    on_error: continue
+
+  - id: hitl_gate
+    action: manager_self
+    ref: workflow/hitl-gate-flow.md
+    condition: "feasibility_result.risk_level == 'full_review'"
+    protocol: agents/protocols/hitl-protocol.md
+    on_error: report_and_stop
+    note: "新增：Tier 3 操作暫停等待用戶確認"
+
+  - id: execute
+    action: dispatch_rounds
+    condition: "feasibility_result.decision in [proceed, proceed_with_warning]"
+    ref: workflow/execute-flow.md
+    protocol: workflow/dispatch-protocol.md
+    shared_context: true
+    trace_id: "$TRACE_ID"
+    inline_verify: agents/protocols/workflows/inline-verify-flow.md
+    verify_note: "每次 agent 返回後立即驗證聲稱，通過才派下一個"
+    on_error: retry_once
+    note: "升級：含 shared_context + trace_id 傳遞"
+
+  - id: verify
+    action: verify_agent_work
+    ref: workflow/verify-flow.md
+    skip_if: "feasibility_result.decision == proceed_query"
+    on_error: continue
+    note: "送審前的完整性快速檢查，確保 execute 產出符合預期再送 Governance"
+
+  - id: governance
+    action: dispatch_agent
+    agent: agent-ops/governance
+    model: opus
+    ref: workflow/governance-flow.md
+    trace_id: "$TRACE_ID"
+    on_error: report_and_continue
+    note: "no skip_if — Principle 10: Governance 永遠執行；於 verify 後執行獨立稽核"
+
+  - id: synthesize
+    action: merge_results
+    ref: workflow/synthesis-rules.md
+    on_error: partial_report
+    note: "新增獨立步驟：從 deliver 拆出，可獨立監控"
+
+  - id: deliver
+    action: respond_to_user
+    ref: workflow/deliver-flow.md
+    note: "精簡：只負責回覆 + 工時打卡明細"
+
+  - id: save_memory
+    action: write_memory
+    path: memory/
+    on_error: continue
+
+  - id: memory_hygiene_check # self-added 2026-04-25
+    action: manager_self
+    note: "回顧本輪 memory/：有無超過 90 天未 touch 的條目可歸檔至 archive/？MEMORY.md 索引是否一致？worklog 計數達 30 或 memory/ 檔案超 20 個時觸發週期性清理。"
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: continue
+
+  - id: memory_check
+    action: manager_self
+    note: "回顧本輪：是否有用戶糾正/審查結果/新 lesson 需存 memory？有則寫入 memory/ + 更新 MEMORY.md；無則跳過。"
+    on_error: continue
+
+references:
+  - workflow/classify-flow.md
+  - workflow/dispatch-protocol.md
+  - workflow/synthesis-rules.md
+  - agents/protocols/hitl-protocol.md
+  - agents/protocols/rules/agent-slo.md
+  - agents/protocols/verification-protocol.md

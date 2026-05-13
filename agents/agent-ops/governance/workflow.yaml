@@ -1,0 +1,44 @@
+name: Governance Review
+description: Agent 系統變更的合規審查工作流
+
+error_policy:
+  default: continue
+  max_retries: 1
+  on_step_error: continue
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start agent-ops/governance sonnet \"$TASK_SUMMARY\""
+    on_error: continue
+
+  - id: check_memory
+    action: read_memory
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: feedback_detect # self-added 2026-04-26
+    action: manager_self
+    note: "偵測上游 Manager 對 Governance 審查結果的正/負面回饋語意，觸發 memory 保存"
+    on_error: continue
+
+  - id: memory_hygiene_check # self-added 2026-04-26
+    action: manager_self
+    note: "回顧 memory/：有無超過 90 天未 touch 的條目可歸檔？MEMORY.md 索引是否一致？"
+    on_error: continue
+
+  - id: review
+    action: route
+    on: review
+    ref: workflow/review-flow.md
+    on_error: continue
+
+  - id: save_memory
+    action: write_memory
+    path: memory/
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: continue

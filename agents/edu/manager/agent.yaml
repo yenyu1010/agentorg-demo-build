@@ -1,0 +1,18 @@
+agent: manager
+title: "Edu Manager"
+display_name: "教育組長"
+team: edu
+type: manager
+reports_to: user
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "教材生成、課程設計、教材評估、文件生成等所有教育內容相關任務"
+  not_for: "修改 agent 系統（Agent Ops）、軟體開發（SW Manager）"

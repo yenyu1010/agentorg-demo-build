@@ -1,0 +1,37 @@
+name: Evolution
+error_policy:
+  default: continue
+  max_retries: 2
+  on_step_error: continue
+
+steps:
+  - id: log_start
+    action: shell
+    command: scripts/worklog.sh start
+    on_error: continue
+
+  - id: check_memory
+    action: read
+    path: memory/
+    on_error: continue
+
+  - id: route
+    action: route
+    on analyze: { ref: workflow/analyze-flow.md }
+    on cross_team_diff: { ref: workflow/cross-team-diff-flow.md } # self-added 2026-04-25
+    on_error: continue
+
+  - id: save_memory
+    action: write
+    path: memory/
+    on_error: continue
+
+  - id: memory_hygiene_check # self-added 2026-04-26
+    action: manager_self
+    note: "回顧本輪 memory/：有無超過 90 天未 touch 的 PARA 條目可歸檔至 archive/？MEMORY.md 索引是否一致？memory/ 檔案超 15 個時觸發週期性清理。"
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: scripts/worklog.sh end
+    on_error: continue

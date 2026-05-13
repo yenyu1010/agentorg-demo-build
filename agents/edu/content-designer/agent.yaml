@@ -1,0 +1,18 @@
+agent: content-designer
+title: "Content Designer"
+display_name: "教材設計師"
+team: edu
+type: worker
+reports_to: edu/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "設計教材內容結構，消費 Edu Researcher 的結構化摘要後產出教材草稿"
+  not_for: "搜尋外部資料（Researcher）、轉換文件格式（Doc Generator）、agent 系統檔案"
