@@ -135,6 +135,23 @@ Type any of these in Claude Code with cwd set to this folder.
 - **No executable code in `soul.md`**: Soul files describe behavior, not scripts
 - **Output placement**: When called from outside the project, agents write to `tuq_log/output/` in the caller's cwd
 
+## 市場估價類問題強制流程（self-added 2026-05-17）
+
+**教訓來源**：回答台北中山區渭水路房產估價時，未查詢實價登錄數據，直接用訓練記憶給出 47–52 萬/坪，實際成交行情為 73–79 萬/坪，低估約 40%，屬嚴重失誤。
+
+**任何涉及「現在值多少錢」的問題，必須執行以下流程，缺一不可：**
+
+1. **先搜尋，再開口** — 使用 WebSearch 查詢實價登錄、5168、樂屋網等平台的路段成交數據；禁止用訓練資料印象直接給價格數字
+2. **驗證微地段** — 地址 → 最近捷運站 → 商圈定性；不能只看行政區，要查具體街廓與周邊地標
+3. **找至少 3–5 筆實際成交案例** — 列出成交時間、坪數、單價、來源；同類型（屋齡、產品型態）優先
+4. **用比較法做系統性調整** — 屋齡、樓層、坪數、朝向、屋況、車位，每個因子要有數值依據
+5. **標示資料來源** — 每個關鍵數字說明出處；若無法搜尋，必須明說「以下為記憶估算，需實際查證」
+
+**禁止行為**：
+- 不查詢直接給單價範圍
+- 用行政區均價套用於特定街廓（如忠孝新生站商圈 ≠ 中山區整體）
+- 把開價（掛牌價）當成交價引用
+
 ## Bash Execution Rule (Strict)
 
 **Do NOT** run `for`, `while`, `find`, or multi-line inline scripts directly in Bash tool calls.
