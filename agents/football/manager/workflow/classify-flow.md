@@ -8,12 +8,11 @@ feedback_detect → parse_match_info → check_completeness → session_init
 
 ---
 
-## feedback_detect（Manager 直接執行）
+## feedback_detect
 
-依 `agents/protocols/rules/feedback-memory.md` 偵測用戶語意：
-- 正面回饋（「很準」「上次押對了」）→ 先保存到 `memory/` 再繼續
-- 負面回饋（「上次分析有誤」「模型沒用」）→ 先保存 + 記錄問題點再繼續
-- 中性訊息 → 直接進入 parse_match_info
+> **此步驟已提升為 workflow.yaml 頂層獨立步驟**（在 classify 之前執行）。
+> 詳細邏輯見 `agents/protocols/workflows/feedback-detect-flow.md`。
+> 本 flow 不重複實作，避免雙重執行。
 
 ---
 

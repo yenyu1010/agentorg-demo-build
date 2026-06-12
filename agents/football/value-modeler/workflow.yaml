@@ -11,7 +11,7 @@ steps:
 
   - id: check_memory
     action: read_file
-    path: "agents/football/value-modeler/memory/MEMORY.md"
+    path: memory/MEMORY.md
     on_error: continue
 
   - id: ingest
@@ -36,12 +36,12 @@ steps:
 
   - id: track_record
     action: write_file
-    path: "agents/football/value-modeler/memory/track-record.md"
+    path: memory/track-record.md
     on_error: continue
 
   - id: save_memory
     action: write_file
-    path: "agents/football/value-modeler/memory/MEMORY.md"
+    path: memory/MEMORY.md
     on_error: continue
 
   - id: log_end

@@ -15,6 +15,7 @@ steps:
 
   - id: receive_match
     action: inline
+    ref: workflow/receive-match-flow.md
     description: "接收 Manager 傳入的對陣資訊（主隊、客隊、賽事日期、output_path）並驗證必填欄位"
     on_error: stop_and_report
 

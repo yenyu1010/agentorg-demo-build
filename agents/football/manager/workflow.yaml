@@ -18,10 +18,16 @@ steps:
     path: memory/MEMORY.md
     on_error: continue
 
+  - id: feedback_detect
+    action: manager_self
+    ref: agents/protocols/workflows/feedback-detect-flow.md
+    note: "偵測用戶回饋語意，觸發 memory 保存（標準化流程）"
+    on_error: continue
+
   - id: classify
     action: inline
     ref: workflow/classify-flow.md
-    note: "解析賽事資訊與用戶需求；缺聯賽名稱或隊名則詢問用戶後停止；偵測回饋語意並觸發 memory 保存"
+    note: "解析賽事資訊與用戶需求；缺聯賽名稱或隊名則詢問用戶後停止"
     on_error: report_and_stop
 
   - id: dispatch_round1
@@ -82,3 +88,5 @@ references:
   - agents/protocols/verification-protocol.md
   - agents/protocols/workflows/feedback-detect-flow.md
   - agents/protocols/workflows/inline-verify-flow.md
+
+# governance-fix 2026-06-12
