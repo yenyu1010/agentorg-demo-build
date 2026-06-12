@@ -1,0 +1,18 @@
+agent: odds-analyst
+title: "Odds Movement Analyst"
+display_name: "賠率變化分析師"
+team: football
+type: worker
+reports_to: football/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "從球探網取得指定賽事賭盤資料，分析歐賠/亞盤/大小球變化，輸出結構化賠率訊號"
+  not_for: "球隊狀態/傷停/H2H 分析（form-analyst）、期望值/Kelly 注碼計算（value-modeler）、非足球賭盤任務"
