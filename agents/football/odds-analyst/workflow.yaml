@@ -1,0 +1,45 @@
+name: Odds Movement Analyst Workflow
+
+error_policy: stop_on_error
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start football/odds-analyst sonnet \"$TASK_SUMMARY\" manager \"$PARENT_TASK_ID\" \"$DISPATCH_ID\""
+    output: WORKLOG_FILE
+    on_error: abort_and_report
+
+  - id: receive_match
+    action: inline
+    ref: workflow/receive-match-flow.md
+    on_error: report_to_manager
+
+  - id: check_memory
+    action: read_memory
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: fetch_odds
+    action: inline
+    ref: workflow/fetch-odds-flow.md
+    on_error: fallback_to_websearch
+
+  - id: analyze_movement
+    action: inline
+    ref: workflow/analyze-movement-flow.md
+    on_error: report_partial_results
+
+  - id: output_report
+    action: write_file
+    path: "{output_path}/odds_analysis.md"
+    on_error: report_to_manager
+
+  - id: save_memory
+    action: write_memory
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"賠率分析完成：$MATCH_SUMMARY\""
+    on_error: retry_once

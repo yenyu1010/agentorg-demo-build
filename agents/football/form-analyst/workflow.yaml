@@ -1,0 +1,49 @@
+name: Team Form Analyst Workflow
+error_policy: stop_and_report
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start football/form-analyst sonnet \"$TASK_SUMMARY\" manager"
+    output: WORKLOG_FILE
+    on_error: stop_and_report
+
+  - id: check_memory
+    action: read_memory
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: receive_match
+    action: inline
+    ref: workflow/receive-match-flow.md
+    description: "接收 Manager 傳入的對陣資訊（主隊、客隊、賽事日期、output_path）並驗證必填欄位"
+    on_error: stop_and_report
+
+  - id: fetch_form
+    action: inline
+    ref: workflow/fetch-form-flow.md
+    description: "從 titan007 抓取近期戰績/H2H/積分，WebSearch 補充傷停新聞；含 fallback 機制"
+    on_error: stop_and_report
+
+  - id: analyze
+    action: inline
+    ref: workflow/analyze-flow.md
+    description: "加權戰績評分、主客場拆分、H2H 歸納、動機評級、Poisson λ 萃取"
+    on_error: stop_and_report
+
+  - id: output_report
+    action: inline
+    ref: workflow/output-flow.md
+    description: "將分析結果組裝為標準對照表格式，寫入 output_path"
+    on_error: stop_and_report
+
+  - id: save_memory
+    action: write_memory
+    path: memory/MEMORY.md
+    description: "保存本次成功的 URL pattern 與分析要點至 memory"
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"狀態分析完成：{home_team} vs {away_team}\""
+    on_error: warn_and_continue

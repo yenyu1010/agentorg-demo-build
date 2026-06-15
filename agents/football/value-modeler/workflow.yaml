@@ -1,0 +1,50 @@
+name: Value Betting Modeler Workflow
+
+error_policy: stop_on_error
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start football/value-modeler sonnet \"$TASK_SUMMARY\" manager"
+    output: WORKLOG_FILE
+    on_error: stop_and_report
+
+  - id: check_memory
+    action: read_file
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: ingest
+    action: inline
+    ref: workflow/ingest-flow.md
+    on_error: stop_and_report
+
+  - id: estimate_prob
+    action: inline
+    ref: workflow/estimate-flow.md
+    on_error: stop_and_report
+
+  - id: compute_ev
+    action: inline
+    ref: workflow/ev-kelly-flow.md
+    on_error: stop_and_report
+
+  - id: rank_recommend
+    action: inline
+    ref: workflow/ev-kelly-flow.md#rank_and_output
+    on_error: stop_and_report
+
+  - id: track_record
+    action: write_file
+    path: memory/track-record.md
+    on_error: continue
+
+  - id: save_memory
+    action: write_file
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: retry_once

@@ -1,4 +1,5 @@
 {
+  "model": "opus",
   "permissions": {
     "_comment": "2026-04-27 PS narrow patterns — workaround for v2.1.119 PowerShell(*) subexpression carve-out, see GH#52926",
     "allow": [

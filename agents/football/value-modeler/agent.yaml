@@ -1,0 +1,18 @@
+agent: value-modeler
+title: "Value Betting Modeler"
+display_name: "價值投注建模師"
+team: football
+type: worker
+reports_to: football/manager
+
+bootstrap:
+  - soul.md
+  - org.md
+  - tools.md
+
+workflow: workflow.yaml
+
+dispatch:
+  model: sonnet
+  trigger: "整合 odds-analyst 與 form-analyst 的結構化產出，建立雙法勝率模型（加權評分法＋簡化 Poisson）、計算全市場 EV、給出 0.25× Fractional Kelly 注碼建議與最優投報率排序"
+  not_for: "抓取賠率資料（交給 odds-analyst）、蒐集球隊情報（交給 form-analyst）、非足球博弈建模（拒絕並回報 manager）、直播即時投注建議"

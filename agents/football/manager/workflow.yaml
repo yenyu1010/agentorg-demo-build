@@ -1,0 +1,92 @@
+name: Football Analysis Manager Orchestration
+description: 足球賭盤分析流程，兩輪派遣模式（Round1 並行：odds-analyst + form-analyst；Round2 串行：value-modeler）。
+
+error_policy:
+  default: retry_once
+  max_retries: 1
+  on_max_retries: report_gap_to_user
+
+steps:
+  - id: log_start
+    action: shell
+    command: "bash scripts/worklog.sh start football/manager opus \"$TASK_SUMMARY\" user"
+    output: WORKLOG_FILE
+    on_error: continue
+
+  - id: check_memory
+    action: read_memory
+    path: memory/MEMORY.md
+    on_error: continue
+
+  - id: feedback_detect
+    action: manager_self
+    ref: agents/protocols/workflows/feedback-detect-flow.md
+    note: "偵測用戶回饋語意，觸發 memory 保存（標準化流程）"
+    on_error: continue
+
+  - id: classify
+    action: inline
+    ref: workflow/classify-flow.md
+    note: "解析賽事資訊與用戶需求；缺聯賽名稱或隊名則詢問用戶後停止"
+    on_error: report_and_stop
+
+  - id: dispatch_round1
+    action: dispatch_agents_parallel
+    agents:
+      - football/odds-analyst
+      - football/form-analyst
+    model: sonnet
+    shared_context: true
+    ref: workflow/dispatch-flow.md#round1
+    note: "並行派遣：兩個 worker 無相依關係，必須同步執行以節省時間"
+    on_error: retry_once
+
+  - id: verify_round1
+    action: inline
+    ref: workflow/dispatch-flow.md#verify_round1
+    note: "逐項驗證兩份報告完整性（依 inline-verify-flow.md），通過後才進入 Round2"
+    on_error: report_and_stop
+
+  - id: dispatch_round2
+    action: dispatch_agent
+    agent: football/value-modeler
+    model: sonnet
+    ref: workflow/dispatch-flow.md#round2
+    note: "串行派遣：value-modeler 輸入必須含 odds-analyst 和 form-analyst 報告全文"
+    on_error: retry_once
+
+  - id: synthesize
+    action: merge_results
+    ref: workflow/synthesis-flow.md
+    note: "三合一合成：賠率訊號 × 球隊狀態 × EV 推薦；誠實回報，無推薦時照實說明"
+    on_error: partial_report
+
+  - id: deliver
+    action: respond_to_user
+    ref: workflow/synthesis-flow.md#deliver
+    note: "交付最終報告，末尾必附工時打卡明細表與免責聲明"
+    on_error: continue
+
+  - id: save_memory
+    action: write_memory
+    path: memory/
+    note: "保存本次分析的學習成果（賽事模式、資料缺口、worker 表現）"
+    on_error: continue
+
+  - id: log_end
+    action: shell
+    command: "bash scripts/worklog.sh end \"$WORKLOG_FILE\" completed \"$OUTPUT_SUMMARY\""
+    on_error: report_and_stop
+
+references:
+  - workflow/classify-flow.md
+  - workflow/dispatch-flow.md
+  - workflow/synthesis-flow.md
+  - workflow/dispatch-protocol.md
+  - agents/protocols/worklog-protocol.md
+  - agents/protocols/hitl-protocol.md
+  - agents/protocols/verification-protocol.md
+  - agents/protocols/workflows/feedback-detect-flow.md
+  - agents/protocols/workflows/inline-verify-flow.md
+
+# governance-fix 2026-06-12
