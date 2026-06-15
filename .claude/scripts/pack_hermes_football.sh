@@ -16,6 +16,10 @@ find "$BUNDLE" -path "*/worklog/*.json" -delete
 mkdir -p "$BUNDLE/_scripts"
 cp "$ROOT/.claude/scripts/half_goal_from_line.py" "$BUNDLE/_scripts/" 2>/dev/null || true
 
+# 2b) 帶上 S33-football 入口 skill
+mkdir -p "$BUNDLE/_skill/S33-football"
+cp "$ROOT/.claude/skills/S33-football/SKILL.md" "$BUNDLE/_skill/S33-football/" 2>/dev/null || true
+
 # 3) 寫 MANIFEST
 cat > "$BUNDLE/MANIFEST.md" <<'MD'
 # Football Analysis Team — 可攜 Bundle (for Hermes Agent)
@@ -29,13 +33,15 @@ cat > "$BUNDLE/MANIFEST.md" <<'MD'
   - manager/memory/*.md                        ← 任務回顧
 - value-modeler/skills.md 已含: §1c滾球 / §1d水位對照 / §1e即場進球公式+操作規則 / §1f走地民間訊號庫 / §5b勝率軸
 - _scripts/half_goal_from_line.py             ← 即場進球公式腳本
+- _skill/S33-football/SKILL.md                ← 斜線指令入口(放回 .claude/skills/S33-football/ 即可)
 - worklog/ 僅保留空結構(.gitkeep),已移除 runtime 日誌
 
 ## 搬進 Hermes Agent 後,需另外確保的「外部相依」(本 bundle 未含,因屬共用基建)
 1. scripts/worklog.sh                 — 打卡腳本(天條),agent 每次開收工要呼叫
 2. agents/protocols/                  — worklog-protocol / memory-protocol / hitl / verification 等
    (football agent 的 workflow 會 ref 這些 protocol)
-3. (選用) .claude/skills/S33-football/SKILL.md — 斜線指令入口(你這次選「只搬 agents 核心」,未含)
+3. _skill/S33-football/SKILL.md — 已含。放到 Hermes 的 .claude/skills/S33-football/ 下即可用斜線指令。
+   注意 SKILL.md 內 Step 0 的根目錄定位(symlink 反查/CWD 上溯)會自動適配新位置;但若改名或路徑特殊,檢查它指向的 agents/football/manager/agent.yaml 是否存在
 4. reports_to 鏈: manager/agent.yaml 寫 reports_to: user;若 Hermes 有上層 Officer/Director,需調整
 
 ## 啟動方式(在 Hermes Agent 內)
