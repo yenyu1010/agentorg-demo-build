@@ -2,7 +2,6 @@
 name: s33-football
 description: 足球分析組入口。接收賽事，並行分派賠率變化分析＋兩隊近況分析，再由價值模型計算 EV 與最優投報率推薦（資料源：titan007.com 球探網）。
 version: "1.0.0"
-allowed-tools: Glob Grep Read Bash
 ---
 
 ## User Request
@@ -24,17 +23,23 @@ bash -c 'echo "${AGENTORG_ROOT:-}"'
 ```
 非空且該路徑下存在 `agents/protocols/definitions.md` 則取之。
 
-**方式 C — 全域 symlink 反查（僅限 symlink 安裝）**
+**方式 C — Hermes 預設安裝路徑**
+```bash
+python3 -c "import os; candidates=[os.path.expanduser('~/AppData/Local/hermes'), os.path.expanduser('~/.hermes')]; print(next((p for p in candidates if os.path.isfile(os.path.join(p,'agents','protocols','definitions.md'))), ''))"
+```
+輸出非空則取之。（Windows Hermes Desktop 通常是 `~/AppData/Local/hermes`。）
+
+**方式 D — 全域 symlink 反查（僅限 symlink 安裝）**
 ```bash
 python3 -c "import os; p=os.path.realpath(os.path.expanduser('~/.hermes/skills/s33-football/SKILL.md')); r=os.path.abspath(os.path.join(os.path.dirname(p),'..','..','..')); print(r if os.path.isfile(os.path.join(r,'agents','protocols','definitions.md')) else '')"
 ```
-輸出非空則取之。（僅當 `~/.hermes/skills/s33-football` 是指向 AgentOrg 專案內 skill 的 symlink 時成立；若是 Hermes 預設 Windows AppData 安裝，通常請使用方式 B 設定 `AGENTORG_ROOT`。）
+輸出非空則取之。（僅當 `~/.hermes/skills/s33-football` 是指向 AgentOrg 專案內 skill 的 symlink 時成立。）
 
-**方式 D — CWD 上溯**
+**方式 E — CWD 上溯**
 從當前工作目錄向上逐層檢查是否存在 `agents/protocols/definitions.md`，命中即為 `<ROOT>`。
 
-**四者皆失敗時**：停止執行並回報
-「無法定位 AgentOrg 根目錄。請安裝完整 hermes-football-bundle / AgentOrg 專案，並設定環境變數 `AGENTORG_ROOT=<AgentOrg 絕對路徑>`」。
+**以上皆失敗時**：停止執行並回報
+「無法定位 AgentOrg 根目錄。請確認 complete bundle 已安裝到 Hermes home，或設定環境變數 `AGENTORG_ROOT=<AgentOrg 絕對路徑>`」。
 
 取得 `<ROOT>` 後，**後續所有 Read/Glob/Grep 一律使用絕對路徑** `<ROOT>/agents/...`，嚴禁相對路徑。
 
