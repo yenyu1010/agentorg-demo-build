@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""FG-Score v0.2 — 從 4 場實戰（3 正 1 反）歸納的足球走地進球評分公式。
-v0.1 → v0.2 關鍵修正：加入「2.0 分水嶺停損」P。
-反例桑德尼斯（HT 0-0）讓我們發現：降盤+大球升水的型態在『要進球』與『快死掉』的 0-0
-盤面上完全相同，唯一分水嶺是 —— 破蛋前盤口若跌破 2.0 仍 0-0，等於市場把進球定價出去了。
-仍為原型，於 tuq_log 暫存；驗證後再考慮正式併入 football-go skill。"""
+"""FG-Score v0.3 — 從 6 場實戰（3 正 3 反）歸納的足球走地進球評分公式。
+v0.1: C1-C5 加權計分 → 被反例完全騙過（0-0 將死的盤面型態與將進球者相同）。
+v0.2: 加「2.0 分水嶺」軟罰分 → 仍漏掉 min 線=1.75 的反例（印尼U19）。
+v0.3: 改為「2.0 硬閘」—— 破蛋前(仍 0-0)盤口只要跌破 2.0 就 ABORT，無視其他分數。
+      6 場樣本上達到 3 正 / 3 反「完美二分」：正樣本最低線皆 ≥2.0、反樣本皆 <2.0。
+仍為原型；於 calibration 暫存；驗證更多場、邊界(剛好卡2.0卻槓龜)未被證偽前不併入 analyzer。"""
 import json, sys
 
 def goals(score):
@@ -36,29 +37,26 @@ def score_match(path):
     if any(m <= 30 and g >= 3 for m, g in gm): ref += 3; hits.append("334")
     if any(m <= 75 and g >= 6 for m, g in gm): ref += 3; hits.append("757")
     ref = min(ref, 10)
-
-    # NEW v0.2 ── 2.0 分水嶺停損：破蛋前 0-0 時盤口最低降到哪
-    scoreless_lines = [s["line"] for s in snaps if goals(s["score"]) == 0]
-    min_sl = min(scoreless_lines) if scoreless_lines else 99
-    if   min_sl >= 2.0:  pen = 0      # 卡在 2.0 以上 → 進球將至，不罰
-    elif min_sl >= 1.75: pen = -25    # 跌破 2.0 到 1.75 → 警訊
-    else:                pen = -45    # 跌到 1.5 以下 → 市場已放棄首半球
-
     raw = c1 + c2 + c3 + c4 + ref
-    total = raw + pen
+
+    # v0.3 ── 2.0 硬閘：破蛋前 0-0 盤口最低線
+    scoreless = [s["line"] for s in snaps if goals(s["score"]) == 0]
+    min_sl = min(scoreless) if scoreless else 99
+    floor_ok = min_sl >= 2.0
+
     if not gate:        verdict = "🔴 SKIP (選場不過)"
-    elif total >= 70:   verdict = "🟢 STRONG GO"
-    elif total >= 50:   verdict = "🟡 GO"
-    elif total >= 30:   verdict = "⚪ WAIT/ABORT"
+    elif not floor_ok:  verdict = "🔴 ABORT (跌破2.0)"
+    elif raw >= 70:     verdict = "🟢 STRONG GO"
+    elif raw >= 50:     verdict = "🟡 GO"
+    elif raw >= 30:     verdict = "⚪ WAIT"
     else:               verdict = "🔴 SKIP"
-    return dict(match=d["match"][:24], tl=tl, hcap=hcap, c1=c1, c2=c2, c3=c3, c4=c4,
-                ref=ref, hits=",".join(hits) or "-", min_sl=min_sl, pen=pen,
-                raw=raw, total=total, verdict=verdict)
+    return dict(match=d["match"][:22], tl=tl, hcap=hcap, c1=c1, c2=c2, c3=c3, c4=c4,
+                ref=ref, min_sl=min_sl, floor="✅" if floor_ok else "❌", raw=raw, verdict=verdict)
 
 rows = [score_match(p) for p in sys.argv[1:]]
-print(f"{'賽事':<26}{'線':>4}{'讓':>5} | C1 C2 C3 C4 ref | 最低線  停損 | v0.1 → v0.2  結論")
-print("-" * 100)
+print(f"{'賽事':<24}{'線':>4}{'讓':>5} | C1 C2 C3 C4 ref | raw | 最低線 2.0閘 | v0.3 結論")
+print("-" * 96)
 for r in rows:
-    print(f"{r['match']:<24}{r['tl']:>5}{r['hcap']:>5} | "
-          f"{r['c1']:>2} {r['c2']:>2} {r['c3']:>2} {r['c4']:>2} {r['ref']:>3} | "
-          f"{r['min_sl']:>5}  {r['pen']:>4} | {r['raw']:>3} → {r['total']:>3}   {r['verdict']}")
+    print(f"{r['match']:<22}{r['tl']:>5}{r['hcap']:>5} | "
+          f"{r['c1']:>2} {r['c2']:>2} {r['c3']:>2} {r['c4']:>2} {r['ref']:>3} | {r['raw']:>3} | "
+          f"{r['min_sl']:>5}  {r['floor']:>3}  | {r['verdict']}")
