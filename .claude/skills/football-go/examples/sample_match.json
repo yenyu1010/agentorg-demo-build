@@ -1,0 +1,17 @@
+{
+  "match": "Arsenal vs Chelsea",
+  "league": "Premier League",
+  "pre_match": {
+    "handicap": -0.75,
+    "total_line": 2.5,
+    "over_odds_open": 0.88
+  },
+  "snapshots": [
+    {"minute": 5,  "score": "0-0", "line": 2.5,  "over_odds": 0.88, "under_odds": 0.92, "sot": 1},
+    {"minute": 10, "score": "0-0", "line": 2.5,  "over_odds": 0.90, "under_odds": 0.96, "sot": 2},
+    {"minute": 18, "score": "0-0", "line": 2.5,  "over_odds": 0.93, "under_odds": 1.00, "sot": 4},
+    {"minute": 25, "score": "0-0", "line": 2.25, "over_odds": 0.95, "under_odds": 1.05, "sot": 5},
+    {"minute": 33, "score": "1-0", "line": 2.25, "over_odds": 0.97, "under_odds": 1.10, "sot": 7},
+    {"minute": 40, "score": "1-0", "line": 2.0,  "over_odds": 0.98, "under_odds": 1.15, "sot": 9}
+  ]
+}
