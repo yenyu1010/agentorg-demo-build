@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>室內格局重新規劃｜31.77坪三房</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+    background: #e8e8e8;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page {
+    background: white;
+    padding: 40px 40px 30px;
+    max-width: 1080px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  }
+  h1 { text-align: center; font-size: 20px; color: #1a1a1a; margin-bottom: 4px; letter-spacing: .05em; }
+  .subtitle { text-align: center; font-size: 12px; color: #777; margin-bottom: 28px; }
+  .plan-wrap { display: flex; justify-content: center; }
+  .legend {
+    margin-top: 18px;
+    display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; font-size: 11px; color: #444;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .lbox { width: 22px; height: 14px; border: 1.5px solid; }
+  .changes {
+    margin-top: 20px; padding: 14px 18px;
+    background: #fff8f8; border-left: 4px solid #e63946;
+    font-size: 12.5px; line-height: 1.9; color: #333;
+  }
+  .changes h3 { font-size: 13px; color: #c0392b; margin-bottom: 6px; }
+  .changes ol { margin-left: 18px; }
+  .footer {
+    margin-top: 16px; text-align: center;
+    font-size: 10px; color: #aaa; line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>室內格局重新規劃圖</h1>
+  <div class="subtitle">室內面積 31.77 坪｜三房兩廳一書房｜開放式廚餐客廳</div>
+
+  <div class="plan-wrap">
+  <svg width="980" height="700" viewBox="0 0 980 700" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#27ae60"/>
+    </marker>
+    <pattern id="stripe-red" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#e63946" stroke-width="1.5" opacity=".35"/>
+    </pattern>
+  </defs>
+
+  <!-- ══════════════════════════════════════════════
+       COMPASS
+  ══════════════════════════════════════════════ -->
+  <g transform="translate(55,70)">
+    <polygon points="0,-20 5,2 0,8 -5,2" fill="#333"/>
+    <polygon points="0,20 5,-2 0,-8 -5,-2" fill="#aaa"/>
+    <line x1="0" y1="-20" x2="0" y2="20" stroke="#555" stroke-width="1"/>
+    <line x1="-20" y1="0" x2="20" y2="0" stroke="#555" stroke-width="1"/>
+    <text x="0" y="-26" text-anchor="middle" font-size="13" font-weight="bold" fill="#333">N</text>
+  </g>
+
+  <!-- ══════════════════════════════════════════════
+       BALCONIES  (dashed perimeter)
+  ══════════════════════════════════════════════ -->
+  <!-- Front balcony 前陽台 -->
+  <rect x="18" y="225" width="92" height="265" fill="#e8f5e9" stroke="#555" stroke-width="2" stroke-dasharray="10,5"/>
+  <text x="64" y="392" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32"
+        transform="rotate(-90,64,392)">前陽台</text>
+  <text x="64" y="372" text-anchor="middle" font-size="10" fill="#4caf50"
+        transform="rotate(-90,64,372)">校園綠景</text>
+  <!-- door gap on balcony wall -->
+  <rect x="108" y="305" width="4" height="60" fill="white"/>
+
+  <!-- Rear balcony 後陽台 -->
+  <rect x="860" y="225" width="92" height="265" fill="#e8f5e9" stroke="#555" stroke-width="2" stroke-dasharray="10,5"/>
+  <text x="906" y="392" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32"
+        transform="rotate(90,906,392)">後陽台</text>
+  <text x="906" y="372" text-anchor="middle" font-size="10" fill="#4caf50"
+        transform="rotate(90,906,372)">防火巷</text>
+
+  <!-- ══════════════════════════════════════════════
+       OUTER APARTMENT WALLS  (thick border)
+  ══════════════════════════════════════════════ -->
+  <rect x="110" y="55" width="750" height="585" fill="white" stroke="#111" stroke-width="7"/>
+
+  <!-- ══════════════════════════════════════════════
+       TOP ROW  ─  Guest Bath  +  NEW Bedroom 2
+       y=55 → y=240  (only x=390 → x=860, left open for living)
+  ══════════════════════════════════════════════ -->
+
+  <!-- Interior horizontal wall separating top rooms from living area -->
+  <line x1="390" y1="55" x2="390" y2="240" stroke="#111" stroke-width="5"/>
+  <line x1="390" y1="240" x2="860" y2="240" stroke="#111" stroke-width="5"/>
+  <!-- Vertical divider between guest bath & new bedroom 2 -->
+  <line x1="555" y1="55" x2="555" y2="240" stroke="#111" stroke-width="5"/>
+
+  <!-- Guest Bathroom  (客衛浴) ─ x=390-555, y=55-240 -->
+  <rect x="391" y="56" width="163" height="183" fill="#e3f2fd"/>
+  <!-- toilet -->
+  <ellipse cx="445" cy="108" rx="20" ry="27" fill="white" stroke="#90caf9" stroke-width="1.5"/>
+  <rect x="425" y="81" width="40" height="18" rx="3" fill="white" stroke="#90caf9" stroke-width="1.5"/>
+  <!-- sink -->
+  <rect x="490" y="80" width="48" height="40" rx="6" fill="white" stroke="#90caf9" stroke-width="1.5"/>
+  <circle cx="514" cy="100" r="5" fill="#90caf9"/>
+  <!-- label -->
+  <text x="472" y="185" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565c0">客衛浴</text>
+  <!-- door arc -->
+  <path d="M 555 55 A 55 55 0 0 0 555 110" fill="none" stroke="#666" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="555" y1="55" x2="555" y2="110" stroke="#666" stroke-width="1.5"/>
+
+  <!-- NEW Bedroom 2  (次臥室2 移至此)  x=555-860, y=55-240 -->
+  <rect x="556" y="56" width="303" height="183" fill="#fce4ec"/>
+  <!-- bed symbol -->
+  <rect x="590" y="75" width="200" height="100" rx="6" fill="white" stroke="#f48fb1" stroke-width="1.5"/>
+  <rect x="590" y="75" width="200" height="28" rx="4" fill="#fce4ec"/>
+  <rect x="590" y="100" width="28" height="75" fill="#fce4ec"/>
+  <rect x="762" y="100" width="28" height="75" fill="#fce4ec"/>
+  <!-- label -->
+  <text x="706" y="198" text-anchor="middle" font-size="14" font-weight="bold" fill="#880e4f">次臥室 2</text>
+  <!-- "調整" badge -->
+  <rect x="765" y="63" width="42" height="19" rx="9" fill="#e63946"/>
+  <text x="786" y="76.5" text-anchor="middle" font-size="10" fill="white" font-weight="bold">移至此</text>
+  <!-- top wall windows (original kitchen window openings — unchanged) -->
+  <rect x="650" y="55" width="55" height="7" fill="#b0c4de"/>
+  <line x1="668" y1="55" x2="668" y2="62" stroke="#7a8fa6" stroke-width="1"/>
+  <line x1="686" y1="55" x2="686" y2="62" stroke="#7a8fa6" stroke-width="1"/>
+  <rect x="750" y="55" width="65" height="7" fill="#b0c4de"/>
+  <line x1="770" y1="55" x2="770" y2="62" stroke="#7a8fa6" stroke-width="1"/>
+  <line x1="795" y1="55" x2="795" y2="62" stroke="#7a8fa6" stroke-width="1"/>
+  <!-- door from bedroom 2 to common hall -->
+  <rect x="555" y="190" width="60" height="5" fill="white"/>
+  <path d="M 555 190 A 55 55 0 0 1 610 190" fill="none" stroke="#666" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="555" y1="190" x2="610" y2="190" stroke="#666" stroke-width="1.5"/>
+
+  <!-- ══════════════════════════════════════════════
+       OPEN PLAN ZONE  (客廳 ＋ 餐廳 ＋ 廚房)
+       y=55 (left side top) or y=240 (right side top) → y=455
+  ══════════════════════════════════════════════ -->
+
+  <!-- Background fill for open zone -->
+  <!-- Left strip (full height) x=110-390, y=55-455 -->
+  <rect x="111" y="56" width="278" height="398" fill="#fffde7"/>
+  <!-- Center strip x=390-555, y=240-455 -->
+  <rect x="391" y="241" width="163" height="213" fill="#fffde7"/>
+  <!-- Right strip (new kitchen, was bedroom 2) x=555-860, y=240-455 -->
+  <rect x="556" y="241" width="303" height="213" fill="#fffde7"/>
+
+  <!-- Bottom border of open zone -->
+  <line x1="110" y1="455" x2="860" y2="455" stroke="#111" stroke-width="5"/>
+
+  <!-- ── Demolished wall indicators (red dashed) ── -->
+  <!-- Original wall: living room / dining room  x=390, y=240-455 -->
+  <line x1="390" y1="240" x2="390" y2="455" stroke="#e63946" stroke-width="2.5" stroke-dasharray="10,5"/>
+  <!-- Original wall: dining room / bedroom 2  x=555, y=240-455 -->
+  <line x1="555" y1="240" x2="555" y2="455" stroke="#e63946" stroke-width="2.5" stroke-dasharray="10,5"/>
+
+  <!-- ── LIVING ROOM label + furniture ── -->
+  <!-- Sofa -->
+  <rect x="130" y="270" width="200" height="70" rx="6" fill="white" stroke="#f9a825" stroke-width="1.5"/>
+  <rect x="130" y="270" width="200" height="22" rx="4" fill="#fff9c4"/>
+  <rect x="130" y="292" width="32" height="48" rx="4" fill="#fff9c4"/>
+  <rect x="298" y="292" width="32" height="48" rx="4" fill="#fff9c4"/>
+  <!-- coffee table -->
+  <ellipse cx="230" cy="385" rx="60" ry="38" fill="white" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="230" y="415" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">客廳</text>
+  <!-- entry note -->
+  <text x="185" y="248" text-anchor="middle" font-size="10" fill="#888">（含玄關入口）</text>
+
+  <!-- ── DINING ROOM label + furniture ── -->
+  <!-- Table -->
+  <rect x="407" y="285" width="130" height="90" rx="5" fill="white" stroke="#f9a825" stroke-width="1.5"/>
+  <!-- chairs -->
+  <rect x="422" y="272" width="28" height="14" rx="3" fill="white" stroke="#f9a825" stroke-width="1"/>
+  <rect x="464" y="272" width="28" height="14" rx="3" fill="white" stroke="#f9a825" stroke-width="1"/>
+  <rect x="422" y="374" width="28" height="14" rx="3" fill="white" stroke="#f9a825" stroke-width="1"/>
+  <rect x="464" y="374" width="28" height="14" rx="3" fill="white" stroke="#f9a825" stroke-width="1"/>
+  <text x="472" y="426" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">餐廳</text>
+
+  <!-- ── NEW KITCHEN label + furniture ── -->
+  <!-- Counter top -->
+  <rect x="572" y="250" width="270" height="52" rx="4" fill="white" stroke="#ef9a9a" stroke-width="1.5"/>
+  <!-- stove burners -->
+  <circle cx="605" cy="276" r="13" fill="none" stroke="#ef9a9a" stroke-width="1.5"/>
+  <circle cx="650" cy="276" r="13" fill="none" stroke="#ef9a9a" stroke-width="1.5"/>
+  <circle cx="695" cy="276" r="11" fill="none" stroke="#ef9a9a" stroke-width="1.5"/>
+  <circle cx="733" cy="276" r="11" fill="none" stroke="#ef9a9a" stroke-width="1.5"/>
+  <!-- sink -->
+  <rect x="760" y="258" width="65" height="40" rx="5" fill="white" stroke="#ef9a9a" stroke-width="1.5"/>
+  <circle cx="792" cy="278" r="6" fill="#ef9a9a"/>
+  <!-- fridge / cabinet on right wall -->
+  <rect x="838" y="260" width="22" height="170" rx="3" fill="white" stroke="#ef9a9a" stroke-width="1.5"/>
+  <text x="695" y="406" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">廚房</text>
+  <!-- "調整" badge -->
+  <rect x="750" y="394" width="42" height="19" rx="9" fill="#e63946"/>
+  <text x="771" y="407.5" text-anchor="middle" font-size="10" fill="white" font-weight="bold">移至此</text>
+
+  <!-- ── OPEN PLAN annotation ── -->
+  <text x="455" y="448" text-anchor="middle" font-size="11" fill="#b05a00" font-style="italic" letter-spacing=".08em">
+    ▸▸  客廳  ／  餐廳  ／  廚房  全面打通·開放通透  ◂◂
+  </text>
+
+  <!-- ══════════════════════════════════════════════
+       DOORS
+  ══════════════════════════════════════════════ -->
+  <!-- Front balcony → living room door -->
+  <rect x="110" y="305" width="5" height="65" fill="white"/>
+  <path d="M110,305 A65,65 0 0,0 110,370" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+  <!-- Kitchen → Rear balcony door (NEW circulation) -->
+  <rect x="855" y="295" width="5" height="70" fill="white"/>
+  <path d="M860,295 A70,70 0 0,1 860,365" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+  <!-- ── Circulation arrow: front balcony → through open plan → rear balcony ── -->
+  <path d="M 110,340 Q 340,390 500,360 Q 660,330 855,330"
+        fill="none" stroke="#27ae60" stroke-width="2" stroke-dasharray="7,4"
+        marker-end="url(#arr-green)"/>
+  <text x="480" y="353" text-anchor="middle" font-size="9" fill="#27ae60">前後陽台新動線（穿越廚房）</text>
+
+  <!-- ══════════════════════════════════════════════
+       BOTTOM ROW
+  ══════════════════════════════════════════════ -->
+
+  <!-- Interior vertical dividers in bottom row -->
+  <line x1="295" y1="455" x2="295" y2="640" stroke="#111" stroke-width="5"/>
+  <line x1="420" y1="455" x2="420" y2="640" stroke="#111" stroke-width="5"/>
+  <line x1="575" y1="455" x2="575" y2="640" stroke="#111" stroke-width="5"/>
+
+  <!-- MASTER BEDROOM  主臥室  x=110-295 -->
+  <rect x="111" y="456" width="183" height="183" fill="#e8eaf6"/>
+  <!-- bed -->
+  <rect x="125" y="475" width="155" height="110" rx="6" fill="white" stroke="#7986cb" stroke-width="1.5"/>
+  <rect x="125" y="475" width="155" height="30" rx="4" fill="#c5cae9" fill-opacity=".6"/>
+  <rect x="125" y="502" width="30" height="83" fill="#e8eaf6"/>
+  <rect x="250" y="502" width="30" height="83" fill="#e8eaf6"/>
+  <text x="202" y="618" text-anchor="middle" font-size="14" font-weight="bold" fill="#283593">主臥室</text>
+  <!-- door -->
+  <rect x="255" y="455" width="5" height="60" fill="white"/>
+  <path d="M260,455 A60,60 0 0,0 260,515" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="260" y1="455" x2="260" y2="515" stroke="#555" stroke-width="1.5"/>
+
+  <!-- MASTER BATHROOM  主衛浴  x=295-420 -->
+  <rect x="296" y="456" width="123" height="183" fill="#e8f5e9"/>
+  <!-- toilet -->
+  <ellipse cx="340" cy="510" rx="18" ry="24" fill="white" stroke="#81c784" stroke-width="1.5"/>
+  <rect x="322" y="487" width="36" height="17" rx="3" fill="white" stroke="#81c784" stroke-width="1.5"/>
+  <!-- shower -->
+  <rect x="303" y="545" width="105" height="80" rx="5" fill="white" stroke="#81c784" stroke-width="1.5"/>
+  <text x="355" y="590" text-anchor="middle" font-size="10" fill="#388e3c">浴缸</text>
+  <text x="357" y="625" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20">主衛浴</text>
+  <!-- door to master bed -->
+  <rect x="295" y="455" width="5" height="55" fill="white"/>
+  <path d="M295,455 A55,55 0 0,1 295,510" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="295" y1="455" x2="295" y2="510" stroke="#555" stroke-width="1.5"/>
+
+  <!-- STUDY  書房  x=420-575 -->
+  <rect x="421" y="456" width="153" height="183" fill="#f5f5f5"/>
+  <!-- desk -->
+  <rect x="438" y="480" width="118" height="60" rx="4" fill="white" stroke="#bdbdbd" stroke-width="1.5"/>
+  <!-- monitor -->
+  <rect x="465" y="488" width="65" height="40" rx="3" fill="#eeeeee" stroke="#bdbdbd" stroke-width="1"/>
+  <rect x="490" y="528" width="15" height="10" fill="#bdbdbd"/>
+  <text x="498" y="618" text-anchor="middle" font-size="13" font-weight="bold" fill="#424242">書房</text>
+  <!-- door -->
+  <rect x="420" y="455" width="55" height="5" fill="white"/>
+  <path d="M420,455 A55,55 0 0,0 475,455" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="420" y1="455" x2="420" y2="510" stroke="#555" stroke-width="1.5"/>
+
+  <!-- BEDROOM 1  次臥室1  x=575-860 -->
+  <rect x="576" y="456" width="283" height="183" fill="#fce4ec"/>
+  <!-- bed -->
+  <rect x="600" y="476" width="240" height="115" rx="6" fill="white" stroke="#f48fb1" stroke-width="1.5"/>
+  <rect x="600" y="476" width="240" height="30" rx="4" fill="#fce4ec"/>
+  <rect x="600" y="503" width="30" height="88" fill="#fce4ec"/>
+  <rect x="810" y="503" width="30" height="88" fill="#fce4ec"/>
+  <text x="717" y="618" text-anchor="middle" font-size="14" font-weight="bold" fill="#880e4f">次臥室 1</text>
+  <!-- door -->
+  <rect x="576" y="455" width="60" height="5" fill="white"/>
+  <path d="M576,455 A60,60 0 0,1 636,455" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="576" y1="455" x2="576" y2="515" stroke="#555" stroke-width="1.5"/>
+  <!-- window on bottom wall -->
+  <rect x="640" y="633" width="65" height="7" fill="#b0c4de"/>
+  <line x1="660" y1="633" x2="660" y2="640" stroke="#7a8fa6" stroke-width="1"/>
+  <line x1="680" y1="633" x2="680" y2="640" stroke="#7a8fa6" stroke-width="1"/>
+
+  <!-- ══════════════════════════════════════════════
+       WINDOWS  (all unchanged — original openings)
+  ══════════════════════════════════════════════ -->
+  <!-- Top wall – bedroom 2 (was kitchen) -->
+  <!-- already drawn above inside bedroom 2 section -->
+  <!-- Left wall – living room (front side) -->
+  <rect x="110" y="270" width="7" height="50" fill="#b0c4de"/>
+  <!-- Right wall – kitchen (rear side, same opening as original bedroom 2) -->
+  <rect x="853" y="270" width="7" height="55" fill="#b0c4de"/>
+  <!-- Bottom wall -->
+  <rect x="145" y="633" width="55" height="7" fill="#b0c4de"/>
+  <line x1="163" y1="633" x2="163" y2="640" stroke="#7a8fa6" stroke-width="1"/>
+  <rect x="760" y="633" width="55" height="7" fill="#b0c4de"/>
+  <line x1="778" y1="633" x2="778" y2="640" stroke="#7a8fa6" stroke-width="1"/>
+
+  <!-- ══════════════════════════════════════════════
+       CHANGE CALLOUT NUMBERS
+  ══════════════════════════════════════════════ -->
+  <!-- ① bedroom 2 new position -->
+  <circle cx="556" cy="148" r="11" fill="#e63946"/>
+  <text x="556" y="153" text-anchor="middle" font-size="11" fill="white" font-weight="bold">①</text>
+  <!-- ② kitchen new position -->
+  <circle cx="707" cy="360" r="11" fill="#e63946"/>
+  <text x="707" y="365" text-anchor="middle" font-size="11" fill="white" font-weight="bold">②</text>
+  <!-- ③ rear balcony door -->
+  <circle cx="858" cy="330" r="11" fill="#27ae60"/>
+  <text x="858" y="335" text-anchor="middle" font-size="11" fill="white" font-weight="bold">③</text>
+
+  <!-- ══════════════════════════════════════════════
+       SCALE BAR
+  ══════════════════════════════════════════════ -->
+  <g transform="translate(110,672)">
+    <line x1="0" y1="0" x2="120" y2="0" stroke="#555" stroke-width="2"/>
+    <line x1="0" y1="-5" x2="0" y2="5" stroke="#555" stroke-width="2"/>
+    <line x1="60" y1="-3" x2="60" y2="3" stroke="#555" stroke-width="1.5"/>
+    <line x1="120" y1="-5" x2="120" y2="5" stroke="#555" stroke-width="2"/>
+    <text x="30" y="-8" text-anchor="middle" font-size="9" fill="#666">≈1.5m</text>
+    <text x="90" y="-8" text-anchor="middle" font-size="9" fill="#666">≈1.5m</text>
+  </g>
+
+  </svg>
+  </div><!-- /plan-wrap -->
+
+  <div class="legend">
+    <div class="legend-item"><div class="lbox" style="background:#fffde7; border-color:#f9a825;"></div>開放式公共區（客廳／餐廳／廚房）</div>
+    <div class="legend-item"><div class="lbox" style="background:#e8eaf6; border-color:#7986cb;"></div>主臥室</div>
+    <div class="legend-item"><div class="lbox" style="background:#fce4ec; border-color:#f48fb1;"></div>次臥室</div>
+    <div class="legend-item"><div class="lbox" style="background:#e3f2fd; border-color:#90caf9;"></div>衛浴</div>
+    <div class="legend-item"><div class="lbox" style="background:#e8f5e9; border-color:#81c784;"></div>陽台</div>
+    <div class="legend-item">
+      <svg width="28" height="14"><line x1="2" y1="7" x2="26" y2="7" stroke="#e63946" stroke-width="2" stroke-dasharray="6,3"/></svg>
+      拆除隔間（示意）
+    </div>
+  </div>
+
+  <div class="changes">
+    <h3>格局調整說明</h3>
+    <ol>
+      <li><strong>① 次臥室2 ↔ 廚房 位置對調</strong>：次臥室2 移至右上角（原廚房位置），保留原有外牆北向窗開口；廚房移至右中區（原次臥室2位置），保留原有東向外牆開口。</li>
+      <li><strong>② 客廳／餐廳／廚房 全部打通</strong>：拆除三區所有內部隔間，形成大型開放式公共空間（圖中紅虛線為原隔間位置），視野通透，採光更佳。</li>
+      <li><strong>③ 後陽台出入口更新</strong>：後陽台進出動線改由新廚房右牆開門（綠色箭頭動線），從前陽台進入到後陽台的路徑穿越整個開放公共區。</li>
+      <li><strong>外牆開口全數保留</strong>：所有外牆窗戶位置不動，次臥室2承接原廚房窗位，廚房承接原次臥室2窗位。</li>
+    </ol>
+  </div>
+
+  <div class="footer">
+    *本圖為示意格局，比例依圖面縮放，正確尺寸以實物及建築師現場丈量為準。僅供規劃參考使用。
+  </div>
+</div>
+</body>
+</html>
